@@ -1,7 +1,5 @@
 package br.com.cognitio.infrastructure.persistence.repository;
 
-import br.com.cognitio.application.service.UserService;
-import br.com.cognitio.domain.dto.UserDto;
 import br.com.cognitio.domain.model.User;
 import br.com.cognitio.domain.port.out.UserRepository;
 import br.com.cognitio.infrastructure.persistence.entity.UserEntity;
@@ -33,6 +31,18 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Optional<User> findByEmail(String email) {
         Optional<UserEntity> userEntity = springDataUserRepository.findByEmail(email);
+        return userEntity.map(UserEntityMapper.INSTANCE::userEntityToUser);
+    }
+
+    @Override
+    public Optional<User> findByLogin(String login) {
+        Optional<UserEntity> userEntity = springDataUserRepository.findByLogin(login);
+        return userEntity.map(UserEntityMapper.INSTANCE::userEntityToUser);
+    }
+
+    @Override
+    public Optional<User> findById(Long id) {
+        Optional<UserEntity> userEntity = springDataUserRepository.findById(id);
         return userEntity.map(UserEntityMapper.INSTANCE::userEntityToUser);
     }
 }

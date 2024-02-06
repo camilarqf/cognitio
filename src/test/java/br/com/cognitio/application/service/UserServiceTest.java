@@ -3,6 +3,7 @@ package br.com.cognitio.application.service;
 import br.com.cognitio.application.exception.EmailAlreadyExistsException;
 import br.com.cognitio.domain.model.User;
 import br.com.cognitio.domain.port.out.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,8 +13,7 @@ import org.mockito.MockitoAnnotations;
 import java.time.LocalDate;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class UserServiceTest {
@@ -38,11 +38,17 @@ class UserServiceTest {
     LocalDate ultimoAcesso = null;
 
     private User newUser;
+    private User existingUser;
+    private User updatedUser;
 
     @BeforeEach
     public void setup() {
 
         newUser = new User(id, login, senha, email, ativo, dataCadastro, ultimoAcesso);
+        existingUser = new User(1L, "existingLogin", "existingPassword", "existingEmail@example.com", true, null, null);
+        updatedUser = new User(1L, "updatedLogin", "updatedPassword", "updatedEmail@example.com", true, null, null);
+        when(userRepository.findById(existingUser.getId())).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(any(User.class))).thenReturn(updatedUser);
     }
 
     @Test
@@ -69,5 +75,27 @@ class UserServiceTest {
         assertThrows(EmailAlreadyExistsException.class, () -> {
             userService.createUser(newUser);
         });
+    }
+
+    @Test
+    void whenUpdateUser_thenSuccess() {
+        User result = userService.updateUser(existingUser.getId(), updatedUser);
+
+        assertNotNull(result);
+        assertEquals(updatedUser.getEmail(), result.getEmail());
+        assertEquals(updatedUser.getLogin(), result.getLogin());
+        assertEquals(updatedUser.getSenha(), result.getSenha());
+
+        verify(userRepository).save(any(User.class));
+    }
+
+    @Test
+    void whenUpdateUserWithInvalidId_thenThrowEntityNotFoundException() {
+        Long invalidUserId = 99L;
+        when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> userService.updateUser(invalidUserId, updatedUser));
+
+        verify(userRepository, never()).save(any(User.class));
     }
 }

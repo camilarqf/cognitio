@@ -1,8 +1,7 @@
 package br.com.cognitio.infrastructure.api;
 
-import br.com.cognitio.application.exception.EmailAlreadyExistsException;
 import br.com.cognitio.application.service.UserService;
-import br.com.cognitio.domain.dto.UserDto;
+import br.com.cognitio.application.dto.UserDto;
 import br.com.cognitio.domain.model.User;
 import br.com.cognitio.infrastructure.api.controller.UserController;
 import br.com.cognitio.infrastructure.exception.advice.GlobalExceptionHandler;
@@ -12,8 +11,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -25,7 +22,6 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-import static org.springframework.test.web.servlet.setup.MockMvcBuilders.standaloneSetup;
 
 public class UserControllerTest {
     private MockMvc mockMvc;

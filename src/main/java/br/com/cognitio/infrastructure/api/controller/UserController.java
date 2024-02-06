@@ -1,18 +1,18 @@
 package br.com.cognitio.infrastructure.api.controller;
 
 import br.com.cognitio.application.mapper.UserMapper;
-import br.com.cognitio.domain.dto.UserDto;
+import br.com.cognitio.application.dto.UserDto;
 import br.com.cognitio.domain.model.User;
 import br.com.cognitio.domain.port.in.UserUseCase;
+
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+@Validated
 @RestController
 @RequestMapping(value = "/user")
 public class UserController {
@@ -32,4 +32,14 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.CREATED).body(userDto);
 
     }
+
+    @PutMapping("/{id}")
+    ResponseEntity<UserDto>update(@Valid @PathVariable Long id, @RequestBody UserDto userDto){
+        User userToUpdate = UserMapper.INSTANCE.userDtoToUser(userDto);
+        User updatedUser =  userUseCase.updateUser(id, userToUpdate);
+        UserDto updatedUserDto = UserMapper.INSTANCE.userToUserDto(updatedUser);
+        logger.info("Usuário editado com sucesso");
+        return ResponseEntity.status(HttpStatus.OK).body(updatedUserDto);
+    }
+
 }

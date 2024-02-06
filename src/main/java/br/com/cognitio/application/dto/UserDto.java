@@ -1,6 +1,11 @@
-package br.com.cognitio.domain.dto;
+package br.com.cognitio.application.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import lombok.NoArgsConstructor;
+@NoArgsConstructor
 public class UserDto {
+
+    @NotBlank
     private String login;
 
     private String email;

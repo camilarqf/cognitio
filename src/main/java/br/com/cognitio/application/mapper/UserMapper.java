@@ -1,6 +1,6 @@
 package br.com.cognitio.application.mapper;
 
-import br.com.cognitio.domain.dto.UserDto;
+import br.com.cognitio.application.dto.UserDto;
 import br.com.cognitio.domain.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
