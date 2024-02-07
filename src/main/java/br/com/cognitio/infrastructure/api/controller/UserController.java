@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-@Validated
+
 @RestController
 @RequestMapping(value = "/user")
 public class UserController {
@@ -34,7 +34,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<UserDto>update(@Valid @PathVariable Long id, @RequestBody UserDto userDto){
+    ResponseEntity<UserDto>update(@PathVariable Long id, @Valid @RequestBody UserDto userDto){
         User userToUpdate = UserMapper.INSTANCE.userDtoToUser(userDto);
         User updatedUser =  userUseCase.updateUser(id, userToUpdate);
         UserDto updatedUserDto = UserMapper.INSTANCE.userToUserDto(updatedUser);

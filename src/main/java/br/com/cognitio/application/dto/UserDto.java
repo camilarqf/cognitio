@@ -1,14 +1,18 @@
 package br.com.cognitio.application.dto;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserDto {
 
-    @NotBlank
+    @NotBlank(message = "O campo LOGIN é obrigatório")
     private String login;
 
+    @NotBlank(message = "O campo E-MAIL é obrigatório")
     private String email;
+
+    @NotBlank(message = "O campo SENHA é obrigatório")
     private String senha;
 
     public String getLogin() {
