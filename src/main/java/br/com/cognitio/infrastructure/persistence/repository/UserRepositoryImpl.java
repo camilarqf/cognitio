@@ -8,7 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class UserRepositoryImpl implements UserRepository {
@@ -44,5 +46,13 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findById(Long id) {
         Optional<UserEntity> userEntity = springDataUserRepository.findById(id);
         return userEntity.map(UserEntityMapper.INSTANCE::userEntityToUser);
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        List<UserEntity> userEntity = springDataUserRepository.findAll();
+        return springDataUserRepository.findAll()
+                .stream().map(UserEntityMapper.INSTANCE::userEntityToUser)
+                .collect(Collectors.toList());
     }
 }

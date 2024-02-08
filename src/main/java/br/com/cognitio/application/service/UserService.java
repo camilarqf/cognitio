@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class UserService implements UserUseCase {
     private static final Logger logger = LoggerFactory.getLogger(UserService.class);
@@ -60,6 +62,17 @@ public class UserService implements UserUseCase {
             logger.error("Erro ao editar usuário: {}", e.getMessage());
             throw e;
         }
+    }
+
+    @Override
+    public List<User> findAllUsers() {
+        return userRepository.findAllUsers();
+    }
+
+    @Override
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o ID:" + userId));
     }
 
 
