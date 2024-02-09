@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<StandardError> objectNotFoundException(RuntimeException ex, HttpServletRequest request){
+    public ResponseEntity<StandardError> runtimeException(RuntimeException ex, HttpServletRequest request){
         StandardError error = new StandardError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(),
                 "Erro na solicitação", ex.getMessage(), request.getRequestURI());
         logger.error("TIMESTAMP={}; REQUEST URI={}; STATUS CODE={}; ERROR={}", System.currentTimeMillis(),
@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<StandardError> objectNotFoundException(MethodArgumentNotValidException ex, HttpServletRequest request){
+    public ResponseEntity<StandardError> methodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request){
         ValidationError errors = new ValidationError(System.currentTimeMillis(), HttpStatus.BAD_REQUEST.value(),
                 "Erro de validação.", "Erro na validação dos campos", request.getRequestURI());
 
@@ -37,4 +37,6 @@ public class GlobalExceptionHandler {
                 request.getRequestURI(), HttpStatus.BAD_REQUEST.value(), errors.getMessage());
         return ResponseEntity.status(errors.getStatus()).body(errors);
     }
+
+
 }

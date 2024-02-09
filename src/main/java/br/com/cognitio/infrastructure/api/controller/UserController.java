@@ -25,7 +25,7 @@ public class UserController {
     }
 
     @PostMapping
-    ResponseEntity<UserDto>saveUser(@RequestBody UserDto userDto){
+    public ResponseEntity<UserDto>saveUser(@RequestBody UserDto userDto){
 
         User user = UserMapper.INSTANCE.userDtoToUser(userDto);
         userUseCase.createUser(user);
@@ -35,7 +35,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<UserDto>updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto){
+    public ResponseEntity<UserDto>updateUser(@PathVariable Long id, @Valid @RequestBody UserDto userDto){
         User userToUpdate = UserMapper.INSTANCE.userDtoToUser(userDto);
         User updatedUser =  userUseCase.updateUser(id, userToUpdate);
         UserDto updatedUserDto = UserMapper.INSTANCE.userToUserDto(updatedUser);
@@ -44,21 +44,25 @@ public class UserController {
     }
 
     @GetMapping
-    ResponseEntity<List<UserDto>>getAllUsers(){
-        logger.info("Buscando usuários");
-        List<User> userList = userUseCase.findAllUsers();
-        List<UserDto> userDtos = userList.stream()
-                .map(UserMapper.INSTANCE::userToUserDto)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(userDtos);
+    public ResponseEntity<List<UserDto>>getAllUsers(){
+
+            logger.info("Buscando usuários");
+            List<User> userList = userUseCase.findAllUsers();
+            List<UserDto> userDtos = userList.stream()
+                    .map(UserMapper.INSTANCE::userToUserDto)
+                    .collect(Collectors.toList());
+            return ResponseEntity.status(HttpStatus.OK).body(userDtos);
+
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<UserDto>getUserById(@PathVariable Long id){
-        logger.info("Buscando usuário com ID:" + id);
-        User user = userUseCase.findUserById(id);
-        UserDto userDto = UserMapper.INSTANCE.userToUserDto(user);
-        return ResponseEntity.ok(userDto);
+    public ResponseEntity<UserDto>getUserById(@PathVariable Long id){
+
+            logger.info("Buscando usuário com ID:" + id);
+            User user = userUseCase.findUserById(id);
+            UserDto userDto = UserMapper.INSTANCE.userToUserDto(user);
+            return ResponseEntity.status(HttpStatus.OK).body(userDto);
+
     }
 
 }

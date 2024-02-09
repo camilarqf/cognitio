@@ -28,14 +28,7 @@ public class UserService implements UserUseCase {
     public User createUser(User user) {
         logger.info("Tentando criar usuário com email: {}", user.getEmail());
         try {
-            userRepository.findByEmail(user.getEmail())
-                    .ifPresent(u -> {
-                        throw new EmailAlreadyExistsException("E-mail já está em uso");
-                    });
-            userRepository.findByLogin(user.getLogin())
-                    .ifPresent(u -> {
-                        throw new LoginAlreadyExistsException("Login já está em uso");
-                    });
+           validateUserUnique(user);
             User savedUser = userRepository.save(user);
             logger.info("Usuário criado com sucesso com ID: {}", savedUser.getId());
             return savedUser;
@@ -44,6 +37,17 @@ public class UserService implements UserUseCase {
             throw e;
         }
 
+    }
+
+    private void validateUserUnique(User user) {
+        userRepository.findByEmail(user.getEmail())
+                .ifPresent(u -> {
+                    throw new EmailAlreadyExistsException("E-mail já está em uso");
+                });
+        userRepository.findByLogin(user.getLogin())
+                .ifPresent(u -> {
+                    throw new LoginAlreadyExistsException("Login já está em uso");
+                });
     }
 
     @Transactional
@@ -66,13 +70,22 @@ public class UserService implements UserUseCase {
 
     @Override
     public List<User> findAllUsers() {
-        return userRepository.findAllUsers();
+        try {
+            return userRepository.findAllUsers();
+        } catch (EntityNotFoundException e) {
+            throw new RuntimeException("Nenhum usuário encontrado");
+        }
     }
 
     @Override
     public User findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o ID:" + userId));
+        try {
+            return userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o ID:" + userId));
+        } catch (IllegalStateException e) {
+            logger.error("Erro ao procurar usuário: {}", e.getMessage());
+            throw e;
+        }
     }
 
 

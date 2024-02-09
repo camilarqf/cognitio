@@ -13,6 +13,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -84,4 +86,34 @@ class UserRepositoryImplTest {
 
         assertFalse(foundUser.isPresent());
     }
+
+    @Test
+    void whenFindByLogin_thenUserFound() {
+        when(springDataUserRepository.findByLogin(eq(login))).thenReturn(Optional.of(userEntity));
+
+        Optional<User> foundUser = userRepositoryImpl.findByLogin(login);
+
+        assertTrue(foundUser.isPresent());
+        assertEquals(login, foundUser.get().getLogin());
+    }
+
+    @Test
+    void whenFindByLogin_thenUserNotFound() {
+        when(springDataUserRepository.findByLogin(eq("unknown"))).thenReturn(Optional.empty());
+
+        Optional<User> foundUser = userRepositoryImpl.findByLogin("unknown");
+
+        assertFalse(foundUser.isPresent());
+    }
+
+    @Test
+    void whenFindAllUsersAndNoUsers_thenEmptyList() {
+        when(springDataUserRepository.findAll()).thenReturn(Collections.emptyList());
+
+        List<User> users = userRepositoryImpl.findAllUsers();
+
+        assertTrue(users.isEmpty());
+    }
+
+
 }
