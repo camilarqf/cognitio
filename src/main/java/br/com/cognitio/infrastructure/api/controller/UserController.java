@@ -46,22 +46,42 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserDto>>getAllUsers(){
 
-            logger.info("Buscando usuários");
-            List<User> userList = userUseCase.findAllUsers();
-            List<UserDto> userDtos = userList.stream()
-                    .map(UserMapper.INSTANCE::userToUserDto)
-                    .collect(Collectors.toList());
-            return ResponseEntity.status(HttpStatus.OK).body(userDtos);
+        logger.info("Buscando usuários");
+        List<User> userList = userUseCase.findAllUsers();
+        List<UserDto> userDtos = userList.stream()
+                .map(UserMapper.INSTANCE::userToUserDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.OK).body(userDtos);
 
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<UserDto>getUserById(@PathVariable Long id){
 
-            logger.info("Buscando usuário com ID:" + id);
-            User user = userUseCase.findUserById(id);
-            UserDto userDto = UserMapper.INSTANCE.userToUserDto(user);
-            return ResponseEntity.status(HttpStatus.OK).body(userDto);
+        logger.info("Buscando usuário com ID:" + id);
+        User user = userUseCase.findUserById(id);
+        UserDto userDto = UserMapper.INSTANCE.userToUserDto(user);
+        return ResponseEntity.status(HttpStatus.OK).body(userDto);
+
+    }
+
+    @PostMapping("/block/{id}")
+    public ResponseEntity<UserDto>blockUseById(@PathVariable Long id){
+
+        logger.info("Buscando usuário com ID:" + id);
+        User user = userUseCase.blockUser(id);
+        UserDto userDto = UserMapper.INSTANCE.userToUserDto(user);
+        return ResponseEntity.status(HttpStatus.OK).body(userDto);
+
+    }
+
+    @PostMapping("/unblock/{id}")
+    public ResponseEntity<UserDto>unBlockUseById(@PathVariable Long id){
+
+        logger.info("Buscando usuário com ID:" + id);
+        User user = userUseCase.unBlockUser(id);
+        UserDto userDto = UserMapper.INSTANCE.userToUserDto(user);
+        return ResponseEntity.status(HttpStatus.OK).body(userDto);
 
     }
 

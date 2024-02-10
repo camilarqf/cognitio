@@ -150,4 +150,57 @@ class UserServiceTest {
         assertThrows(EntityNotFoundException.class, () -> userService.findUserById(invalidId));
         verify(userRepository).findById(invalidId);
     }
+
+    @Test
+    void whenBlockUser_thenSuccess() {
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(newUser));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User blockedUser = userService.blockUser(id);
+
+        assertNotNull(blockedUser);
+        assertFalse(blockedUser.getAtivo());
+        verify(userRepository, times(1)).findById(id);
+        verify(userRepository, times(1)).save(newUser);
+    }
+
+    @Test
+    void whenUnBlockUser_thenUserIsUnblockedSuccessfully() {
+
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(newUser));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        User unblockedUser = userService.unBlockUser(id);
+
+        assertNotNull(unblockedUser);
+        assertTrue(unblockedUser.getAtivo());
+        verify(userRepository, times(1)).findById(id);
+        verify(userRepository, times(1)).save(newUser);
+    }
+
+    @Test
+    void whenBlockUserWithNonExistingId_thenThrowEntityNotFoundException() {
+        Long nonExistingUserId = 99L;
+
+        when(userRepository.findById(nonExistingUserId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> userService.blockUser(nonExistingUserId));
+        verify(userRepository, times(1)).findById(nonExistingUserId);
+    }
+
+    @Test
+    void whenUnBlockUserWithNonExistingId_thenThrowEntityNotFoundException() {
+        Long nonExistingUserId = 99L;
+
+        when(userRepository.findById(nonExistingUserId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> userService.unBlockUser(nonExistingUserId));
+        verify(userRepository, times(1)).findById(nonExistingUserId);
+    }
+
+
+
+
 }

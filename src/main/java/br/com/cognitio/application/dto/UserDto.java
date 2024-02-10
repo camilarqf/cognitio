@@ -1,6 +1,5 @@
 package br.com.cognitio.application.dto;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;
 @NoArgsConstructor

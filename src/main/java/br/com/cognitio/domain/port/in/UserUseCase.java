@@ -10,4 +10,8 @@ public interface UserUseCase {
     List<User> findAllUsers();
     User findUserById(Long userId);
 
+    User blockUser(Long id);
+
+    User unBlockUser(Long id);
+
 }

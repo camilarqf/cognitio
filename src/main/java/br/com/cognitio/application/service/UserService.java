@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserUseCase {
@@ -86,6 +88,25 @@ public class UserService implements UserUseCase {
             logger.error("Erro ao procurar usuário: {}", e.getMessage());
             throw e;
         }
+    }
+
+    private User changeUserStatus(Long id, boolean status) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com o ID: " + id));
+        user.setAtivo(status);
+        return userRepository.save(user);
+    }
+
+    @Override
+    public User blockUser(Long id) {
+        logger.info("Bloqueando usuário com ID: {}", id);
+        return changeUserStatus(id, false);
+    }
+
+    @Override
+    public User unBlockUser(Long id) {
+        logger.info("Desbloqueando usuário com ID: {}", id);
+        return changeUserStatus(id, true);
     }
 
 
