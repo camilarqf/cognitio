@@ -1,6 +1,7 @@
 package br.com.cognitio.application.service;
 
 import br.com.cognitio.application.exception.EmailAlreadyExistsException;
+import br.com.cognitio.domain.model.Enum.EPerfil;
 import br.com.cognitio.domain.model.User;
 import br.com.cognitio.domain.port.out.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -40,6 +41,8 @@ class UserServiceTest {
     LocalDate dataCadastro = LocalDate.now();
     LocalDate ultimoAcesso = null;
 
+    private EPerfil perfil;
+
     private User newUser;
     private User existingUser;
     private User updatedUser;
@@ -47,9 +50,9 @@ class UserServiceTest {
     @BeforeEach
     public void setup() {
 
-        newUser = new User(id, login, senha, email, ativo, dataCadastro, ultimoAcesso);
-        existingUser = new User(1L, "existingLogin", "existingPassword", "existingEmail@example.com", true, null, null);
-        updatedUser = new User(1L, "updatedLogin", "updatedPassword", "updatedEmail@example.com", true, null, null);
+        newUser = new User(id, login, senha, email, ativo, dataCadastro, ultimoAcesso, perfil);
+        existingUser = new User(1L, "existingLogin", "existingPassword", "existingEmail@example.com", true, null, null, EPerfil.ALUNO);
+        updatedUser = new User(1L, "updatedLogin", "updatedPassword", "updatedEmail@example.com", true, null, null, EPerfil.ALUNO);
         when(userRepository.findById(existingUser.getId())).thenReturn(Optional.of(existingUser));
         when(userRepository.save(any(User.class))).thenReturn(updatedUser);
     }
@@ -58,7 +61,7 @@ class UserServiceTest {
     void whenCreateUserWithNewEmail_thenSuccess() {
 
 
-        newUser = new User(id, login, senha,email,ativo, dataCadastro, ultimoAcesso);
+        newUser = new User(id, login, senha, email, ativo, dataCadastro, ultimoAcesso, perfil);
 
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(userRepository.save(any(User.class))).thenReturn(newUser);
@@ -71,7 +74,7 @@ class UserServiceTest {
 
     @Test
     void whenCreateUserWithEmailAlreadyExists_thenThrowException() {
-         newUser = new User(id, login, senha,email,ativo, dataCadastro, ultimoAcesso);
+         newUser = new User(id, login, senha, email, ativo, dataCadastro, ultimoAcesso, perfil);
 
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(newUser));
 
@@ -166,7 +169,7 @@ class UserServiceTest {
     }
 
     @Test
-    void whenUnBlockUser_thenUserIsUnblockedSuccessfully() {
+    void whenUnBlockUser_thenSuccess() {
 
 
         when(userRepository.findById(id)).thenReturn(Optional.of(newUser));
@@ -199,6 +202,40 @@ class UserServiceTest {
         assertThrows(EntityNotFoundException.class, () -> userService.unBlockUser(nonExistingUserId));
         verify(userRepository, times(1)).findById(nonExistingUserId);
     }
+
+    @Test
+    void whenUpdatePerfilUser_thenSuccess() {
+
+        User updatedInfo = new User(id, login, senha, "newEmail@example.com", ativo, dataCadastro, ultimoAcesso, EPerfil.ADMIN);
+
+        when(userRepository.findById(id)).thenReturn(Optional.of(existingUser));
+        when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+
+        User result = userService.updatePerfilUser(id, updatedInfo);
+
+        assertNotNull(result);
+        assertEquals(EPerfil.ADMIN, result.getPerfil());
+        assertEquals("newEmail@example.com", result.getEmail());
+        assertEquals(login, result.getLogin());
+        verify(userRepository).findById(id);
+        verify(userRepository).save(existingUser);
+    }
+
+    @Test
+    void whenUpdatePerfilUserWithInvalidId_thenThrowEntityNotFoundException() {
+
+        Long invalidUserId = 99L;
+        User updatedInfo = new User(invalidUserId, login, senha, email, ativo, dataCadastro, ultimoAcesso, EPerfil.ADMIN);
+
+        when(userRepository.findById(invalidUserId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> userService.updatePerfilUser(invalidUserId, updatedInfo));
+        verify(userRepository).findById(invalidUserId);
+        verify(userRepository, never()).save(any(User.class));
+    }
+
+
 
 
 

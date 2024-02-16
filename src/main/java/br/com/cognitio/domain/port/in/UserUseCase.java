@@ -14,4 +14,5 @@ public interface UserUseCase {
 
     User unBlockUser(Long id);
 
+    User updatePerfilUser(Long userId, User user);
 }

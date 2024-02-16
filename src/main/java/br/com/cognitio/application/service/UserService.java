@@ -2,6 +2,7 @@ package br.com.cognitio.application.service;
 
 import br.com.cognitio.application.exception.EmailAlreadyExistsException;
 import br.com.cognitio.application.exception.LoginAlreadyExistsException;
+import br.com.cognitio.domain.model.Enum.EPerfil;
 import br.com.cognitio.domain.model.User;
 import br.com.cognitio.domain.port.in.UserUseCase;
 import br.com.cognitio.domain.port.out.UserRepository;
@@ -30,7 +31,8 @@ public class UserService implements UserUseCase {
     public User createUser(User user) {
         logger.info("Tentando criar usuário com email: {}", user.getEmail());
         try {
-           validateUserUnique(user);
+            validateUserUnique(user);
+            user.setPerfil(EPerfil.ALUNO);
             User savedUser = userRepository.save(user);
             logger.info("Usuário criado com sucesso com ID: {}", savedUser.getId());
             return savedUser;
@@ -107,6 +109,23 @@ public class UserService implements UserUseCase {
     public User unBlockUser(Long id) {
         logger.info("Desbloqueando usuário com ID: {}", id);
         return changeUserStatus(id, true);
+    }
+
+    @Override
+    public User updatePerfilUser(Long userId, User user) {
+        try {
+            User existingUser = userRepository.findById(userId)
+                    .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado para o ID: " + userId));
+
+            existingUser.setEmail(user.getEmail());
+            existingUser.setLogin(user.getLogin());
+            existingUser.setPerfil(user.getPerfil());
+
+            return userRepository.save(existingUser);
+        } catch (IllegalStateException e) {
+            logger.error("Erro ao editar usuário: {}", e.getMessage());
+            throw e;
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package br.com.cognitio.infrastructure.persistence.entity;
 
+import br.com.cognitio.domain.model.Enum.EPerfil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -33,5 +34,8 @@ public class UserEntity implements Serializable {
     private boolean ativo;
     @JsonFormat(pattern = "dd/MM/yyyy")
     private LocalDate ultimoAcesso;
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "perfil", nullable = false)
+    private EPerfil perfil;
 
 }

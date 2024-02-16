@@ -1,5 +1,7 @@
 package br.com.cognitio.domain.model;
 
+import br.com.cognitio.domain.model.Enum.EPerfil;
+
 import java.time.LocalDate;
 
 public class User {
@@ -13,15 +15,20 @@ public class User {
     private LocalDate dataCadastro;
     private LocalDate ultimoAcesso;
 
-    public User(Long id, String login, String senha, String email, boolean ativo, LocalDate dataCadastro, LocalDate ultimoAcesso) {
+    private EPerfil perfil;
+
+    public User(Long id, String login, String senha, String email, boolean ativo, LocalDate dataCadastro,
+                LocalDate ultimoAcesso, EPerfil perfil) {
         this.id = id;
         this.login = login;
         this.senha = senha;
         this.email = email;
+        this.perfil = perfil;
         this.ativo = true;
         this.dataCadastro = LocalDate.now();
         this.ultimoAcesso = ultimoAcesso;
     }
+
 
     public Long getId() {
         return id;
@@ -77,5 +84,13 @@ public class User {
 
     public void setAtivo(boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public EPerfil getPerfil() {
+        return perfil;
+    }
+
+    public void setPerfil(EPerfil perfil) {
+        this.perfil = perfil;
     }
 }

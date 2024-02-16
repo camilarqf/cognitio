@@ -1,5 +1,6 @@
 package br.com.cognitio.infrastructure.persistence;
 
+import br.com.cognitio.domain.model.Enum.EPerfil;
 import br.com.cognitio.domain.model.User;
 import br.com.cognitio.infrastructure.persistence.entity.UserEntity;
 import br.com.cognitio.infrastructure.persistence.mapper.UserEntityMapper;
@@ -42,10 +43,12 @@ class UserRepositoryImplTest {
     LocalDate dataCadastro = LocalDate.now();
     LocalDate ultimoAcesso = LocalDate.now(); // Ajuste conforme necessário
 
+    private EPerfil perfil;
+
     @BeforeEach
     void setUp() {
 
-        user = new User(id, login, senha, email, ativo, dataCadastro, ultimoAcesso);
+        user = new User(id, login, senha, email, ativo, dataCadastro, ultimoAcesso, perfil);
         userEntity = UserEntityMapper.INSTANCE.userToUserEntity(user);
     }
 

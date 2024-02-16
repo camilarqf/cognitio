@@ -1,6 +1,8 @@
 package br.com.cognitio.infrastructure.api.controller;
 
+import br.com.cognitio.application.dto.PerfilDto;
 import br.com.cognitio.application.dto.UserDto;
+import br.com.cognitio.application.mapper.PerfilMapper;
 import br.com.cognitio.application.mapper.UserMapper;
 import br.com.cognitio.domain.model.User;
 import br.com.cognitio.domain.port.in.UserUseCase;
@@ -83,6 +85,27 @@ public class UserController {
         UserDto userDto = UserMapper.INSTANCE.userToUserDto(user);
         return ResponseEntity.status(HttpStatus.OK).body(userDto);
 
+    }
+
+    @GetMapping("/perfil")
+    public ResponseEntity<List<PerfilDto>>getAllPerfilUsers(){
+
+        logger.info("Buscando perfil de usuários");
+        List<User> userList = userUseCase.findAllUsers();
+        List<PerfilDto> perfilDtos = userList.stream()
+                .map(PerfilMapper.INSTANCE::userToPerfilDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.status(HttpStatus.OK).body(perfilDtos);
+
+    }
+
+    @PutMapping("/perfil/{id}")
+    public ResponseEntity<PerfilDto>updatePerfilUser(@PathVariable Long id, @Valid @RequestBody PerfilDto perfilDto){
+        User userToUpdate = PerfilMapper.INSTANCE.perfilDtoToUser(perfilDto);
+        User updatedUser =  userUseCase.updatePerfilUser(id, userToUpdate);
+        PerfilDto updatedUserDto = PerfilMapper.INSTANCE.userToPerfilDto(updatedUser);
+        logger.info("Usuário editado com sucesso");
+        return ResponseEntity.status(HttpStatus.OK).body(updatedUserDto);
     }
 
 }
